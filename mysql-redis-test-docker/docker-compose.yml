@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  redis-container:
+    image: redis:7.4.2
+    container_name: redis2-container
+    networks:
+      - test-mysql-redis-networks
+    ports:
+      - "6380:6379"
+    command: redis-server --requirepass e4d1f8c9-9b35-4a7b-a6d7-3f820c5e2f12
+    restart: unless-stopped
+  mysql-container:
+    image: mysql:8.4
+    container_name: mysql2-container
+    environment:
+      MYSQL_ROOT_PASSWORD: "YourStorngPassword@"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # 掛載 SQL 初始化腳本
+    networks:
+      - test-mysql-redis-networks
+    ports:
+      - "3307:3306"
+    restart: unless-stopped
+
+volumes:
+  mysql-data:
+
+networks:
+  test-mysql-redis-networks:
